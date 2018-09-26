@@ -78,5 +78,5 @@ class EnglishAuction(Auction):
 
 
 if __name__ == "__main__":
-    ea = EnglishAuction(500)
+    ea = EnglishAuction(reserve_price=50)
     ea.simulate()
