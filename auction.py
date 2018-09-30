@@ -41,7 +41,7 @@ class EnglishAuction(Auction):
         max_offering = 0
         max_buyer_offering = ""
         print("English auction is ready to start, with a starting offer of 0.")
-        print("10 buyers are attending.")
+        print("{} buyers are attending.".format(BUYERS))
         while(stop == False):
             results.clear()
             threads.clear()
@@ -53,14 +53,14 @@ class EnglishAuction(Auction):
             for thread in threads:
                 thread.join()
             if len(results) == 0:
-                if max_offering > self.reserve_price:
+                if max_offering >= self.reserve_price:
                     print("Player {} has won the auction with an offer of {}!".format(max_buyer_offering, max_offering))
                 else:
                     print("The trade can't be done, the max offer is {} but the reserve price is {}".format(max_offering, self.reserve_price))
                 stop = True
             else:
                 if max_buyer_offering == results[0][0] and len(results) == 1:
-                    if max_offering > self.reserve_price:
+                    if max_offering >= self.reserve_price:
                         print("Player {} has won the auction with an offer of {}!".format(max_buyer_offering, max_offering))
                     else:
                         print("The trade can't be done, the max offer is {} but the reserve price is {}".format(max_offering, self.reserve_price))
@@ -74,9 +74,72 @@ class EnglishAuction(Auction):
         for buyer in self._buyers:
             print("{} {}".format(buyer.ID, buyer.value))
             
-    
+class DutchAuction(Auction):
+    def __init__(self, reserve_price=0):
+        Auction.__init__(self, reserve_price=reserve_price)
+        
+    def simulate(self):
+        max_value = max([x.value for x in self._buyers])
+        current_value = max_value + 20
+        stop = False
+        print("Dutch auction is ready to start, with a starting offer of {}.".format(current_value))
+        print("10 buyers are attending.")
+        while(stop == False):
+            print("Who is offering {}?".format(current_value))
+            if max_value == current_value:
+                if max_value >= self.reserve_price:
+                    ID = [x.ID for x in self._buyers if x.value == max_value][0]
+                    print("Player {} has won the auction with an offer of {}!".format(ID, current_value))
+                else:
+                    print("The trade can't be done, the max offer is {} but the reserve price is {}".format(current_value, self.reserve_price))
+                stop = True
+            else:
+                current_value -= 1
+
+class SealedBidFirstPriceAuction(Auction):
+    def __init__(self, reserve_price=0):
+        Auction.__init__(self, reserve_price=reserve_price)
+
+    def simulate(self):
+        max_value = max([x.value for x in self._buyers])
+        print("Sealed-Bid First Price auction is ready to start, please prepare your bids.")
+        print("{} buyers are attending.".format(BUYERS))
+        [print("{} {}".format(x.ID, x.value)) for x in self._buyers ]
+        if max_value >= self.reserve_price:
+            ID = [x.ID for x in self._buyers if x.value == max_value][0]
+            print("Player {} has won the auction with an offer of {}!".format(ID, max_value))
+        else:
+            print("The trade can't be done, the max offer is {} but the reserve price is {}".format(max_value, self.reserve_price))
+
+class VickreyAuction(Auction):
+    def __init__(self, reserve_price=0):
+        Auction.__init__(self, reserve_price=reserve_price)
+
+    def simulate(self):
+        max_value = max([x.value for x in self._buyers])
+        second_max_value = max([x.value for x in self._buyers if x.value != max_value])
+        print("Vickrey auction is ready to start, please prepare your bids.")
+        print("{} buyers are attending.".format(BUYERS))
+        [print("{} {}".format(x.ID, x.value)) for x in self._buyers ]
+        if max_value >= self.reserve_price:
+            if  second_max_value >= self.reserve_price:
+                ID = [x.ID for x in self._buyers if x.value == max_value][0]
+                print("Player {} has won the auction with an offer of {}! Price to pay: {}".format(ID, max_value, second_max_value))
+            else: 
+                print("The trade can't be done, the price to pay is {} but the reserve price is {}".format(second_max_value, self.reserve_price))
+        else:
+            print("The trade can't be done, the max offer is {} but the reserve price is {}".format(max_value, self.reserve_price))
 
 
 if __name__ == "__main__":
     ea = EnglishAuction(reserve_price=50)
-    ea.simulate()
+    #ea.simulate()
+
+    da = DutchAuction()
+    #da.simulate()
+
+    sb = SealedBidFirstPriceAuction()
+    #sb.simulate()
+
+    vik = VickreyAuction()
+    vik.simulate()

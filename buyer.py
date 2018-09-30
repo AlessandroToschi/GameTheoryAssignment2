@@ -14,7 +14,7 @@ class Distribution(IntEnum):
     UNIFORM = 2
 
 class Buyer(object):
-    def __init__(self, ID, common_value=100, distribution=Distribution.GAUSSIAN):
+    def __init__(self, ID, common_value=COMMON_VALUE, distribution=Distribution.GAUSSIAN):
         if distribution == Distribution.GAUSSIAN:
             self.__value = round(common_value + np.random.normal(loc=0, scale=STANDARD_DEVIATION))
         elif distribution == Distribution.UNIFORM:
